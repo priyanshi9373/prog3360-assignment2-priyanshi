@@ -1,9 +1,23 @@
-# prog3360-assignment1-group4
-# Microservices, Docker Compose and CI/CD Pipelines
-# Group: 4
+# PROG3360-Assignment2-Priyanshi
+# Feature Flags, Microservices, Docker Compose and CI/CD Pipelines
+# Name: Priyanshi Jadeja
+# Course: Software Delivery & Release Management
 
+Project Overview:
 This project consists of two Spring Boot microservices, namley, product-service and order-service.
-This services use an H2 in-memory database, and are containerized with Docker and are built and tested using GitHub Actions CI/CD.
+This system demonstrates: Trunk based development, feature flag implementation using unleash, also multi-stage docker builds, docker compose for health checks, Github Actions CI/CD pipeline.
+
+Architecture:
+Service:
+Product Service: Port 8081
+Order Service: Port 8082
+Unleash Server: Port 4242
+PostgresSQL (used by unleash)
+All services are connected using Docker compose and docker file.
+
+How to run the application:
+Start everything using command: docker compose up -d --build
+
 
 # Setup Instructions:
 The following needs to be installed for this project:
