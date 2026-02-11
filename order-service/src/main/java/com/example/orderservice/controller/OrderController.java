@@ -5,6 +5,10 @@ import com.example.orderservice.dto.ProductResponse;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.service.OrderService;
 import org.springframework.web.bind.annotation.*;
+import com.example.orderservice.service.FeatureFlagService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
@@ -12,9 +16,13 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
+    private final FeatureFlagService featureFlagService;
+
     private final OrderService service;
 
-    public OrderController(OrderService service) {
+    public OrderController(FeatureFlagService featureFlagService, OrderService service) {
+        this.featureFlagService = featureFlagService;
         this.service = service;
     }
 
