@@ -14,8 +14,7 @@ public class ProductController {
     private final ProductService service;
     private final FeatureFlagService featureFlagService;
 
-    public ProductController(ProductService service,
-                             FeatureFlagService featureFlagService) {
+    public ProductController(ProductService service, FeatureFlagService featureFlagService) {
         this.service = service;
         this.featureFlagService = featureFlagService;
     }
@@ -44,7 +43,7 @@ public class ProductController {
     public List<Product> getPremiumProducts() {
         List<Product> products = service.getAll();
 
-        if (!featureFlagService.isPremiumPricingEnabled()) {
+        if (!featureFlagService.premiumPricingIsOn()) {
             return products;
         }
 

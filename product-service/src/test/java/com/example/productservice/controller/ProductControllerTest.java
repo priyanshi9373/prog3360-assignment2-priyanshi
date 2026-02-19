@@ -18,39 +18,41 @@ class ProductControllerTest {
     private ProductController controller;
 
     @BeforeEach
-    void setUp() {
+    void setupTests() {
         productService = mock(ProductService.class);
         featureFlagService = mock(FeatureFlagService.class);
         controller = new ProductController(productService, featureFlagService);
     }
 
     @Test
-    void premiumPricing_appliesDiscount_whenFlagOn() {
-        Product p = new Product();
-        p.setName("Test Product");
-        p.setPrice(100.0);
-        p.setQuantity(10);
+    void discountwhenpremiumPricing_flagOn() {
+        Product laptop = new Product();
+        laptop.setName("Laptop");
+        laptop.setPrice(120.0);
+        laptop.setQuantity(5);
 
-        when(productService.getAll()).thenReturn(List.of(p));
-        when(featureFlagService.isPremiumPricingEnabled()).thenReturn(true);
+        when(productService.getAll()).thenReturn(List.of(laptop));
+        when(featureFlagService.premiumPricingIsOn()).thenReturn(true);
 
-        List<Product> result = controller.getPremiumProducts();
+        List<Product> response = controller.getPremiumProducts();
 
-        assertEquals(90.0, result.get(0).getPrice());
+        double expectedPrice = 108.0;
+        assertEquals(expectedPrice, response.get(0).getPrice());
     }
 
     @Test
-    void premiumPricing_noDiscount_whenFlagOff() {
-        Product p = new Product();
-        p.setName("Test Product");
-        p.setPrice(100.0);
-        p.setQuantity(10);
+    void samepricewhenpremiumPricing_flagOff() {
+        Product phone = new Product();
+        phone.setName("Phone");
+        phone.setPrice(200.0);
+        phone.setQuantity(2);
 
-        when(productService.getAll()).thenReturn(List.of(p));
-        when(featureFlagService.isPremiumPricingEnabled()).thenReturn(false);
+        when(productService.getAll()).thenReturn(List.of(phone));
+        when(featureFlagService.premiumPricingIsOn()).thenReturn(false);
 
-        List<Product> result = controller.getPremiumProducts();
+        List<Product> response = controller.getPremiumProducts();
 
-        assertEquals(100.0, result.get(0).getPrice());
+        double expectedPrice = 200.0;
+        assertEquals(expectedPrice, response.get(0).getPrice());
     }
 }

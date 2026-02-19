@@ -5,7 +5,6 @@ import com.example.orderservice.dto.ProductResponse;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
-import com.example.orderservice.service.FeatureFlagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +21,8 @@ public class OrderService {
     private final OrderRepository repository;
     private final ProductClient productClient;
 
-    public OrderService(OrderRepository repository,
-                        ProductClient productClient,
-                        FeatureFlagService featureFlagService) {
-
+    public OrderService(OrderRepository repository, ProductClient productClient, FeatureFlagService featureFlagService)
+    {
         this.repository = repository;
         this.productClient = productClient;
         this.featureFlagService = featureFlagService;
@@ -41,12 +38,12 @@ public class OrderService {
         }
 
         if (product.getQuantity() < order.getQuantity()) {
-            throw new RuntimeException("Insufficient product quantity");
+            throw new RuntimeException("Not enough product quantity");
         }
 
         double totalPrice = product.getPrice() * order.getQuantity();
 
-        if (featureFlagService.isBulkOrderDiscountEnabled()
+        if (featureFlagService.isBulkOrderDiscountOn()
                 && order.getQuantity() > 5) {
 
             totalPrice = totalPrice * 0.85; // 15% discount
@@ -57,7 +54,7 @@ public class OrderService {
 
         Order created = repository.save(order);
 
-        if (featureFlagService.isOrderNotificationsEnabled()) {
+        if (featureFlagService.isOrderNotificationsOn()) {
             log.info("ORDER NOTIFICATION: orderId={}, productId={}, productName={}, qty={}, totalPrice={}",
                     created.getId(),
                     product.getId(),

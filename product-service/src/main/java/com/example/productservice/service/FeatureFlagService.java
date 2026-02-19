@@ -10,16 +10,30 @@ public class FeatureFlagService {
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagService.class);
     private final Unleash unleash;
 
-    public FeatureFlagService(Unleash unleash) {
+    private final String premiumPricing = "premium-pricing";
+
+    public FeatureFlagService(Unleash unleash)
+    {
         this.unleash = unleash;
     }
 
-    public boolean isPremiumPricingEnabled() {
-        try {
-            return unleash.isEnabled("premium-pricing", false); // fallback OFF
-        } catch (Exception e) {
-            log.warn("Unleash unavailable; premium-pricing fallback OFF", e);
-            return false;
+    public boolean premiumPricingIsOn() {
+        boolean flagStatus = false;
+        try{
+            flagStatus = unleash.isEnabled(premiumPricing, false);
+
+            if(flagStatus)
+            {
+                log.info("premium pricing is on");
+            }
+            else
+            {
+                log.info("premium pricing is not on");
+            }
+        } catch(Exception e)
+        {
+            log.warn("Cannot connect to Unleash, premium pricing is off");
         }
+        return flagStatus;
     }
 }

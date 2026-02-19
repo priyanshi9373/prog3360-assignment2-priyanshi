@@ -10,22 +10,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UnleashClientConfig {
 
+    @Value("${unleash.api-url}")
+    private String apiUrl;
+
+    @Value("${unleash.api-token}")
+    private String apiToken;
+
+    @Value("${unleash.app-name}")
+    private String appName;
+
+    @Value("${unleash.instance-id}")
+    private String instanceId;
+
+    @Value("${unleash.environment}")
+    private String environment;
+
     @Bean
-    public Unleash unleash(
-            @Value("${unleash.api-url}") String apiUrl,
-            @Value("${unleash.api-token}") String apiToken,
-            @Value("${unleash.app-name}") String appName,
-            @Value("${unleash.instance-id}") String instanceId,
-            @Value("${unleash.environment}") String environment
-    ) {
-        UnleashConfig config = UnleashConfig.builder()
+    public Unleash unleashClient()
+    {
+        UnleashConfig unleashConfig = UnleashConfig.builder()
                 .appName(appName)
                 .instanceId(instanceId)
                 .unleashAPI(apiUrl)
                 .apiKey(apiToken)
                 .environment(environment)
                 .build();
-
-        return new DefaultUnleash(config);
+        return  new DefaultUnleash(unleashConfig);
     }
 }

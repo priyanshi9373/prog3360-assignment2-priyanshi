@@ -10,25 +10,43 @@ public class FeatureFlagService {
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagService.class);
     private final Unleash unleash;
 
-    public FeatureFlagService(Unleash unleash) {
+    private final String orderNotifications = "order-notifications";
+    private final String bulkOrderDiscount = "bulk-order-discount";
+
+    public FeatureFlagService(Unleash unleash)
+    {
         this.unleash = unleash;
     }
 
-    public boolean isOrderNotificationsEnabled() {
+    public boolean isOrderNotificationsOn() {
+        boolean flagStatus = false;
+
         try {
-            return unleash.isEnabled("order-notifications", false);
-        } catch (Exception e) {
-            log.warn("Unleash unavailable; order-notifications fallback OFF", e);
-            return false;
+            flagStatus = unleash.isEnabled(orderNotifications, false);
+            if (flagStatus) {
+                log.info("Order notifications flag is ON");
+            } else {
+                log.info("Order notifications flag is OFF");
+            }
         }
+        catch(Exception e){
+                log.warn("Cannot connect to Unleash, order notification is Off");
+        }
+        return flagStatus;
     }
 
-    public boolean isBulkOrderDiscountEnabled() {
+    public boolean isBulkOrderDiscountOn() {
+        boolean flagStatus = false;
         try {
-            return unleash.isEnabled("bulk-order-discount", false);
-        } catch (Exception e) {
-            log.warn("Unleash unavailable; bulk-order-discount fallback OFF", e);
-            return false;
+            flagStatus = unleash.isEnabled(bulkOrderDiscount, false);
+            if(flagStatus) {
+            log.info("Bulk order discount flag is ON");
+            } else{
+                log.info("Bulk order discount flag is OFF");
+            }
+        }catch(Exception e){
+            log.warn("Cannot connect to Unleash, bulk order discount is Off");
         }
+        return flagStatus;
     }
 }

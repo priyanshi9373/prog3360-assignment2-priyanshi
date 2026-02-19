@@ -18,7 +18,7 @@ class OrderServiceTest {
     private OrderService service;
 
     @BeforeEach
-    void setUp() {
+    void setupTests() {
         repository = mock(OrderRepository.class);
         productClient = mock(ProductClient.class);
         featureFlagService = mock(FeatureFlagService.class);
@@ -27,48 +27,54 @@ class OrderServiceTest {
     }
 
     @Test
-    void bulkDiscount_applied_whenFlagOn_andQuantityGreaterThan5() {
+    void discountwhenbulkFlag_flagOn() {
 
-        ProductResponse product = new ProductResponse();
-        product.setId(1L);
-        product.setName("Test");
-        product.setPrice(100.0);
-        product.setQuantity(20);
+        ProductResponse laptop = new ProductResponse();
+        laptop.setId(1L);
+        laptop.setName("Laptop");
+        laptop.setPrice(100.0);
+        laptop.setQuantity(20);
 
-        when(productClient.getProductById(1L)).thenReturn(product);
-        when(featureFlagService.isBulkOrderDiscountEnabled()).thenReturn(true);
-        when(featureFlagService.isOrderNotificationsEnabled()).thenReturn(false);
-        when(repository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+        when(productClient.getProductById(1L)).thenReturn(laptop);
+        when(featureFlagService.isBulkOrderDiscountOn()).thenReturn(true);
+        when(featureFlagService.isOrderNotificationsOn()).thenReturn(false);
+        Order savedOrder = new Order();
+        savedOrder.setTotalPrice(510.0);
+        when(repository.save(any(Order.class))).thenReturn(savedOrder);
 
         Order order = new Order();
         order.setProductId(1L);
         order.setQuantity(6);
 
-        Order result = service.createOrder(order);
+        Order response = service.createOrder(order);
 
-        assertEquals(510.0, result.getTotalPrice()); // 6 * 100 = 600 → 15% off = 510
+        double expectedTotal = 510.0;
+        assertEquals(expectedTotal, response.getTotalPrice());
     }
 
     @Test
-    void bulkDiscount_notApplied_whenFlagOff() {
+    void nobulkdiscountwhen_FlagOff() {
 
         ProductResponse product = new ProductResponse();
         product.setId(1L);
-        product.setName("Test");
+        product.setName("Phone");
         product.setPrice(100.0);
         product.setQuantity(20);
 
         when(productClient.getProductById(1L)).thenReturn(product);
-        when(featureFlagService.isBulkOrderDiscountEnabled()).thenReturn(false);
-        when(featureFlagService.isOrderNotificationsEnabled()).thenReturn(false);
-        when(repository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+        when(featureFlagService.isBulkOrderDiscountOn()).thenReturn(false);
+        when(featureFlagService.isOrderNotificationsOn()).thenReturn(false);
+        Order savedOrder = new Order();
+        savedOrder.setTotalPrice(600.0);
+        when(repository.save(any(Order.class))).thenReturn(savedOrder);
 
         Order order = new Order();
         order.setProductId(1L);
         order.setQuantity(6);
 
-        Order result = service.createOrder(order);
+        Order response = service.createOrder(order);
 
-        assertEquals(600.0, result.getTotalPrice()); // no discount
+        double expectedTotal = 600.0;
+        assertEquals(expectedTotal, response.getTotalPrice());
     }
 }
